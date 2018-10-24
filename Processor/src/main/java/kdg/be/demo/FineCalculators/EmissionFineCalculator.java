@@ -7,6 +7,8 @@ import kdg.be.demo.Model.CameraMessage;
 import kdg.be.demo.Model.Fines.EmissionFine;
 import kdg.be.demo.Model.Fines.Fine;
 import kdg.be.demo.Model.LicensePlate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,7 @@ import java.util.Optional;
 
 @Component
 public class EmissionFineCalculator implements FineCalculator {
+    private Logger logger;
     private List<EmissionFine> emissionFines;
 
     @Autowired
@@ -26,6 +29,7 @@ public class EmissionFineCalculator implements FineCalculator {
 
     public EmissionFineCalculator() {
         this.emissionFines = new ArrayList<>();
+        logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @Override
@@ -47,14 +51,14 @@ public class EmissionFineCalculator implements FineCalculator {
                 if (!alreadyFined)
                 {
                     emissionFines.add(emissionFine);
+                    logger.warn(emissionFine.toString());
                     System.out.println(emissionFine.toString());
                     return Optional.of(emissionFine);
                 }
                 return Optional.empty();
             }
         }
-        //TODO: Log / Error
-        System.out.println("Camera or Licesplate not present");
+        logger.error("Licenseplate or Camera not found.");
         return Optional.empty();
     }
 }

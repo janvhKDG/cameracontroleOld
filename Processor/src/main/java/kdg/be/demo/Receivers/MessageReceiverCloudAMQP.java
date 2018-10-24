@@ -5,7 +5,10 @@ import kdg.be.demo.Deserializers.XmlDeserializer;
 import kdg.be.demo.Deserializers.DTO.CameraMessageDTO;
 import kdg.be.demo.Model.CameraMessage;
 import kdg.be.demo.Observers.Observer;
+import kdg.be.demo.Receivers.Exceptions.MessageReceiverException;
 import kdg.be.demo.Services.FineService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +18,7 @@ import java.util.List;
 
 @Component
 public class MessageReceiverCloudAMQP implements MessageReceiver  {
+    private Logger logger;
     private List<Observer> observers = new ArrayList<Observer>();
     private String uri = "amqp://gpogwykr:0pO_XbFqLBVbiJWJ4dlZAmEFNseereBP@flamingo.rmq.cloudamqp.com/gpogwykr";
     private String QName = "JuanQueue";
@@ -24,9 +28,10 @@ public class MessageReceiverCloudAMQP implements MessageReceiver  {
     @Autowired
     private XmlDeserializer xmlDeserializer;
 
+    public MessageReceiverCloudAMQP() {
 
-
-
+        logger = LoggerFactory.getLogger(this.getClass());
+    }
 
     public void initialize() {
 
@@ -39,7 +44,7 @@ public class MessageReceiverCloudAMQP implements MessageReceiver  {
             channel = connection.createChannel();
             channel.queueDeclare(QName,false,false,false,null);
 
-            System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+            logger.info(" [*] Waiting for messages. To exit press CTRL+C");
 
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
@@ -51,14 +56,14 @@ public class MessageReceiverCloudAMQP implements MessageReceiver  {
                     {
                         o.update(cameraMessage);
                     }
-                    System.out.println(" [x] Received '" + cameraMessage.toString() + "'");
+                    logger.info(" [x] Received '" + cameraMessage.toString() + "'");
                 }
             };
             channel.basicConsume(QName, true, consumer);
         }
 
         catch(Exception ex){
-            System.out.println(ex.getMessage());
+            throw new MessageReceiverException("Message Receive Error",ex);
         }
     }
     public void addListener(Observer observer)

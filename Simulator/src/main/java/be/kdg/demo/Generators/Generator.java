@@ -1,7 +1,9 @@
 package be.kdg.demo.Generators;
 
 import be.kdg.demo.Model.CameraMessage;
+import be.kdg.demo.Observers.Observer;
 
 public interface Generator {
-CameraMessage generate();
+void generate();
+void AddListener(Observer o);
 }

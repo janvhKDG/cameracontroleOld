@@ -1,6 +1,7 @@
 package kdg.be.demo.Deserializers;
 
 import kdg.be.demo.Deserializers.DTO.CameraMessageDTO;
+import kdg.be.demo.Deserializers.Exceptions.DeserializeException;
 import kdg.be.demo.Model.CameraMessage;
 import org.springframework.stereotype.Component;
 
@@ -28,10 +29,9 @@ public class XmlDeserializer {
             CameraMessageDTO cameraMessageDTO = (CameraMessageDTO) unmarshaller.unmarshal(xmlReader);
             return new CameraMessage(cameraMessageDTO.getId(),cameraMessageDTO.getTimestamp(),cameraMessageDTO.getLicensePlate());
         } catch (JAXBException e) {
-            e.printStackTrace();
+            throw new DeserializeException("Error parsing Camera Message (xml to object)",e);
         } catch (XMLStreamException e) {
-            e.printStackTrace();
+            throw new DeserializeException("Error parsing Camera Message (xml to object)",e);
         }
-        return null;
     }
 }

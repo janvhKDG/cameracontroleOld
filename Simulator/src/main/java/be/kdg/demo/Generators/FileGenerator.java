@@ -2,6 +2,7 @@ package be.kdg.demo.Generators;
 
 import be.kdg.demo.Generators.Exceptions.FileGeneratorException;
 import be.kdg.demo.Model.CameraMessage;
+import be.kdg.demo.Observers.Observer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -9,12 +10,14 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 @Component
 @ConditionalOnProperty(name = "generator.type", havingValue = "file")
 public class FileGenerator implements Generator {
     private ArrayList<CameraMessage> cameraMessages = new ArrayList<>();
+    private List<Observer> observers = new ArrayList<>();
     int iterator = 0;
     public FileGenerator()
     {
@@ -26,11 +29,18 @@ public class FileGenerator implements Generator {
 
     }
     @Override
-    public CameraMessage generate() {
-        if (cameraMessages.size()>iterator)
-        return cameraMessages.get(iterator++);
-        else return null;
+    public void generate() {
+        for (CameraMessage cm : cameraMessages){
+            for (Observer o : observers)
+            {
+                o.update(cm);
+            }
+        }
+    }
 
+    @Override
+    public void AddListener(Observer o) {
+        observers.add(o);
     }
 
     public ArrayList<CameraMessage> ReadFile(String filePath) throws IOException {

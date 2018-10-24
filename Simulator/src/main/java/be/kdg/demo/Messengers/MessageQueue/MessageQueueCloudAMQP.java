@@ -4,13 +4,16 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MessageQueueCloudAMQP implements MessageQueue {
 
-    private String uri = "amqp://gpogwykr:0pO_XbFqLBVbiJWJ4dlZAmEFNseereBP@flamingo.rmq.cloudamqp.com/gpogwykr";
-    private String QName = "JuanQueue";
+    @Value("${messageQueue.uri}")
+    private String uri;
+    @Value("${messageQueue.qname}")
+    private String QName;
     private Connection connection;
     private Channel channel;
     private Consumer consumer;

@@ -1,6 +1,7 @@
 package kdg.be.demo.Config;
 
 import be.kdg.sa.services.CameraServiceProxy;
+import org.slf4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
